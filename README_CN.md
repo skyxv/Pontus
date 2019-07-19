@@ -25,7 +25,7 @@ Pontus 是一个简单的分布式的持续集成系统。
 
 * 此项目收集测试结果并将其作为文件存储在调度程序进程本地的文件系统中。
 
-## Introduction
+## 说明
 本系统的基本结构由三个部分组成：**observer**, **dispatcher**, **test runner**。
 
 * observer: 监视存储库并在看到新提交时通知**dispatcher**。

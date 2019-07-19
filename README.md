@@ -12,7 +12,7 @@ Pontus is a simple distributed continuous integration system.
 * TCP communication between components supports expansion and distribution, and ensures continuous and orderly data flow between servers.
 * The test runner is self-registering and easy to extend.
 * A dispatcher that handles multiple requests simultaneously.
-* All rely on Python built-in libraries, Can be directly executed using `python3`after cloning.
+* All rely on Python built-in libraries, Can be directly executed using `python3`.
 
 
 ## Project Limitations
