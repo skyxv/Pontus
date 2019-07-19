@@ -9,15 +9,16 @@ import socketserver
 import helpers
 
 
-def runner_checker(server):
-    def manage_commit_lists(runner):
-        for commit, assigned_runner in server.dispatched_commits.iteritems():
-            if assigned_runner == runner:
-                del server.dispatched_commits[commit]
-                server.pending_commits.append(commit)
-                break
-        server.runners.remove(runner)
+def manage_commit_lists(server, runner):
+    for commit, assigned_runner in server.dispatched_commits.iteritems():
+        if assigned_runner == runner:
+            del server.dispatched_commits[commit]
+            server.pending_commits.append(commit)
+            break
+    server.runners.remove(runner)
 
+
+def runner_checker(server):
     while not server.dead:
         time.sleep(1)
         for runner in server.runners:
@@ -28,9 +29,9 @@ def runner_checker(server):
                                                "ping")
                 if response != "pong":
                     print("removing runner %s" % runner)
-                    manage_commit_lists(runner)
+                    manage_commit_lists(server, runner)
             except ConnectionRefusedError:
-                manage_commit_lists(runner)
+                manage_commit_lists(server, runner)
 
 
 def redistribute(server):
@@ -47,15 +48,18 @@ def dispatch_tests(server, commit_id):
     while True:
         print("trying to dispatch to runners")
         for runner in server.runners:
-            response = helpers.communicate(runner["host"],
-                                           int(runner["port"]),
-                                           "runtest:%s" % commit_id)
-            if response == "OK":
-                print("adding id %s" % commit_id)
-                server.dispatched_commits[commit_id] = runner
-                if commit_id in server.pending_commits:
-                    server.pending_commits.remove(commit_id)
-                return
+            try:
+                response = helpers.communicate(runner["host"],
+                                               int(runner["port"]),
+                                               "runtest:%s" % commit_id)
+                if response == "OK":
+                    print("adding id %s" % commit_id)
+                    server.dispatched_commits[commit_id] = runner
+                    if commit_id in server.pending_commits:
+                        server.pending_commits.remove(commit_id)
+                    return
+            except ConnectionRefusedError:
+                manage_commit_lists(server, runner)
         time.sleep(2)
 
 
