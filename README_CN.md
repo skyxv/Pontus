@@ -1,10 +1,10 @@
-Thanatos
+Pontus
 ========
 [![Support Python Version](https://img.shields.io/badge/Python-3.5|3.6-brightgreen.svg)](https://www.python.org/)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 
-Thanatos 是一个简单的分布式的持续集成系统。
+Pontus 是一个简单的分布式的持续集成系统。
 
 ## 特性
 * 组件之间采用TCP通信，支持扩展与分布式, 并保证了服务器之间连续，有序的数据流。
@@ -19,7 +19,7 @@ Thanatos 是一个简单的分布式的持续集成系统。
 
 * 持续集成系统监视的主存储库通常托管在Web服务器上，在此项目中，使用本地存储库而不是远程存储库。
 
-* Thanatos系统每5秒运行一次检查, 它不会测试在这5秒内所做的每一次提交，只测试最近的提交。
+* Pontus系统每5秒运行一次检查, 它不会测试在这5秒内所做的每一次提交，只测试最近的提交。
 
 * 此项目收集测试结果并将其作为文件存储在调度程序进程本地的文件系统中。
 
@@ -31,7 +31,7 @@ Thanatos 是一个简单的分布式的持续集成系统。
 * test runner: 负责针对给定的提交ID运行测试并报告结果。
 
 ## 使用
-构建Thanatos系统将要监控的主存储库。
+构建Pontus系统将要监控的主存储库。
 ```text
 mkdir test_repo
 cd test_repo

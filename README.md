@@ -1,11 +1,11 @@
-Thanatos
+Pontus
 ========
 [![Support Python Version](https://img.shields.io/badge/Python-3.5|3.6-brightgreen.svg)](https://www.python.org/)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 
 
-Thanatos is a simple distributed continuous integration system.
+Pontus is a simple distributed continuous integration system.
 
 ## Features
 * TCP communication between components supports expansion and distribution, and ensures continuous and orderly data flow between servers.
@@ -21,7 +21,7 @@ Thanatos is a simple distributed continuous integration system.
 
 * Continuous integration systems monitor a master repository which is usually hosted on a web server, and not local to the CI's file systems. In this project, use a local repository instead of a remote repository.
 
-* The Thanatos system runs a check every 5 seconds. It does not test every commit made in these 5 seconds, only the most recent commit.
+* The Pontus system runs a check every 5 seconds. It does not test every commit made in these 5 seconds, only the most recent commit.
 
 * For simplicity, this project gathers the test results and stores them as files in the file system local to the dispatcher process.
 
@@ -34,7 +34,7 @@ The basic structure of a continuous integration system consists of three compone
 
 
 ## Usage
-set up the repository Thanatos system will monitor.
+set up the repository Pontus system will monitor.
 ```text
 mkdir test_repo
 cd test_repo
