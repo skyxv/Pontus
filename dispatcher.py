@@ -9,42 +9,7 @@ import socketserver
 import helpers
 
 
-def manage_commit_lists(server, runner):
-    for commit, assigned_runner in server.dispatched_commits.iteritems():
-        if assigned_runner == runner:
-            del server.dispatched_commits[commit]
-            server.pending_commits.append(commit)
-            break
-    server.runners.remove(runner)
-
-
-def runner_checker(server):
-    while not server.dead:
-        time.sleep(1)
-        for runner in server.runners:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            try:
-                response = helpers.communicate(runner["host"],
-                                               int(runner["port"]),
-                                               "ping")
-                if response != "pong":
-                    print("removing runner %s" % runner)
-                    manage_commit_lists(server, runner)
-            except Exception:
-                manage_commit_lists(server, runner)
-
-
-def redistribute(server):
-    while not server.dead:
-        for commit in server.pending_commits:
-            print("running redistribute")
-            print(server.pending_commits)
-            dispatch_tests(server, commit)
-            time.sleep(5)
-
-
 def dispatch_tests(server, commit_id):
-    # NOTE: usually we don't run this forever
     while True:
         print("trying to dispatch to runners")
         for runner in server.runners:
@@ -100,7 +65,6 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
             if not self.server.runners:
                 self.request.sendall("No runners are registered".encode())
             else:
-                # The coordinator can trust us to dispatch the test
                 self.request.sendall("OK".encode())
                 dispatch_tests(self.server, commit_id)
         elif command == "results":
@@ -124,7 +88,61 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
             self.request.sendall("OK".encode())
 
 
-def serve():
+class Dispatcher:
+    """
+    The dispatcher is a separate service used to delegate testing tasks.
+    """
+    def __init__(self, server: ThreadingTCPServer):
+        self.server = server
+
+    def _manage_commit_lists(self, runner):
+        for commit, assigned_runner in self.server.dispatched_commits.iteritems():
+            if assigned_runner == runner:
+                del self.server.dispatched_commits[commit]
+                self.server.pending_commits.append(commit)
+                break
+        self.server.runners.remove(runner)
+
+    def _runner_checker(self):
+        while not self.server.dead:
+            time.sleep(1)
+            for runner in self.server.runners:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                try:
+                    response = helpers.communicate(runner["host"],
+                                                   int(runner["port"]),
+                                                   "ping")
+                    if response != "pong":
+                        print("removing runner %s" % runner)
+                        self._manage_commit_lists(runner)
+                except Exception:
+                    self._manage_commit_lists(runner)
+
+    def _redistribute(self):
+        while not self.server.dead:
+            for commit in self.server.pending_commits:
+                print("running redistribute")
+                print(self.server.pending_commits)
+                dispatch_tests(self.server, commit)
+                time.sleep(5)
+
+    def serve(self):
+        runner_heartbeat = threading.Thread(target=self._runner_checker)
+        redistributor = threading.Thread(target=self._redistribute)
+        try:
+            runner_heartbeat.start()
+            redistributor.start()
+            # Activate the server; this will keep running until you
+            # interrupt the program with Ctrl+C or Cmd+C
+            self.server.serve_forever()
+        except (KeyboardInterrupt, Exception):
+            # if any exception occurs, kill the thread
+            self.server.dead = True
+            runner_heartbeat.join()
+            redistributor.join()
+
+
+if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--host",
                         help="dispatcher's host, by default it uses localhost",
@@ -135,23 +153,7 @@ def serve():
                         default=8888,
                         action="store")
     args = parser.parse_args()
-    server = ThreadingTCPServer((args.host, int(args.port)), DispatcherHandler)
     print("serving on % s: % s" % (args.host, int(args.port)))
-
-    runner_heartbeat = threading.Thread(target=runner_checker, args=(server,))
-    redistributor = threading.Thread(target=redistribute, args=(server,))
-    try:
-        runner_heartbeat.start()
-        redistributor.start()
-        # Activate the server; this will keep running until you
-        # interrupt the program with Ctrl+C or Cmd+C
-        server.serve_forever()
-    except (KeyboardInterrupt, Exception):
-        # if any exception occurs, kill the thread
-        server.dead = True
-        runner_heartbeat.join()
-        redistributor.join()
-
-
-if __name__ == '__main__':
-    serve()
+    dispatch_server = ThreadingTCPServer((args.host, int(args.port)), DispatcherHandler)
+    dispatcher = Dispatcher(dispatch_server)
+    dispatcher.serve()
