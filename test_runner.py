@@ -3,15 +3,11 @@ import os
 import re
 import threading
 import time
-import subprocess
 import socket
 import socketserver
 import unittest
 
 import helpers
-from log_handler import get_logger
-
-logger = get_logger()
 
 
 class ThreadingTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
@@ -73,15 +69,15 @@ class TestHandler(socketserver.BaseRequestHandler):
         os.chdir(repo_path)
         err = os.system("git clean -d -f -x")
         if err:
-            logger.error("Can not clean repository")
+            print("Can not clean repository")
             return
         err = os.system("git pull")
         if err:
-            logger.error("Can not run `git pull` command")
+            print("Can not run `git pull` command")
             return
         err = os.system("git reset --hard {}".format(commit_id))
         if err:
-            logger.error("Can not update to given commit hash")
+            print("Can not update to given commit hash")
             return
 
     def run_tests(self, commit_id, repo_folder):
