@@ -76,7 +76,7 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
     BUF_SIZE = 1024
 
     def handle(self):
-        self.data = self.request.recv(self.BUF_SIZE).strip()
+        self.data = self.request.recv(self.BUF_SIZE).decode().strip()
         command_groups = self.command_re.match(self.data)
         if not command_groups:
             self.request.sendall("Invalid command")
