@@ -4,6 +4,8 @@ Pontus
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 
+[English](https://github.com/yandenghong/Pontus/blob/master/README_CN.md)
+
 Pontus 是一个简单的分布式的持续集成系统。
 
 ## 特性
