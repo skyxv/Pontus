@@ -5,9 +5,6 @@ import argparse
 import subprocess
 
 import helpers
-from log_handler import get_logger
-
-logger = get_logger()
 
 
 class RepoObserver:
@@ -20,7 +17,7 @@ class RepoObserver:
         commit_id = self.get_commit_id()
         err = os.system("git pull")
         if err:
-            logger.error("Can not run `git pull` command")
+            print("Can not run `git pull` command")
             return
         new_commit_id = self.get_commit_id()
         if commit_id != new_commit_id:
