@@ -52,7 +52,6 @@ class RepoObserver:
                 except socket.error as e:
                     raise Exception("Could not communicate with dispatcher server: %s" % e)
                 if response == "OK":
-                    commit = ""
                     with open(".commit_id", "r") as f:
                         commit = f.readline()
                     response = helpers.communicate(dispatcher_host,
