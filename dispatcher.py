@@ -29,7 +29,7 @@ def runner_checker(server):
                 if response != "pong":
                     print("removing runner %s" % runner)
                     manage_commit_lists(runner)
-            except socket.error as e:
+            except ConnectionRefusedError:
                 manage_commit_lists(runner)
 
 
