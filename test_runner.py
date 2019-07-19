@@ -120,6 +120,8 @@ def serve():
                         help="path to the repository this will run test")
     args = parser.parse_args()
     server = ThreadingTCPServer((args.host, int(args.port)), TestHandler)
+    dispatcher_host, dispatcher_port = args.dispatcher_server.split(":")
+    server.dispatcher_server = {"host": dispatcher_host, "port": dispatcher_port}
     print("serving on % s: % s" % (args.host, int(args.port)))
     dispatcher_check = threading.Thread(target=dispatcher_checker, args=(server,))
     try:
