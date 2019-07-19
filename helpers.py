@@ -7,6 +7,6 @@ def communicate(dispatcher_host, dispatcher_port, command):
     s.sendall(command.encode())
     response = s.recv(1024)
     s.close()
-    return response
+    return response.decode()
 
 
