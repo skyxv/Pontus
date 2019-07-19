@@ -79,12 +79,12 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
         self.data = self.request.recv(self.BUF_SIZE).decode().strip()
         command_groups = self.command_re.match(self.data)
         if not command_groups:
-            self.request.sendall("Invalid command")
+            self.request.sendall("Invalid command".encode())
             return
         command = command_groups.group(1)
         if command == "status":
             print("in status")
-            self.request.sendall("OK")
+            self.request.sendall("OK".encode())
         elif command == "register":
             # Add this test runner to our pool
             print("register")
@@ -92,15 +92,15 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
             host, port = re.findall(r":(\w*)", address)
             runner = {"host": host, "port": port}
             self.server.runners.append(runner)
-            self.request.sendall("OK")
+            self.request.sendall("OK".encode())
         elif command == "dispatch":
             print("going to dispatch")
             commit_id = command_groups.group(2)[1:]
             if not self.server.runners:
-                self.request.sendall("No runners are registered")
+                self.request.sendall("No runners are registered".encode())
             else:
                 # The coordinator can trust us to dispatch the test
-                self.request.sendall("OK")
+                self.request.sendall("OK".encode())
                 dispatch_tests(self.server, commit_id)
         elif command == "results":
             print("got test results")
@@ -120,7 +120,7 @@ class DispatcherHandler(socketserver.BaseRequestHandler):
                 data = self.data.split(":")[3:]
                 data = "\n".join(data)
                 f.write(data)
-            self.request.sendall("OK")
+            self.request.sendall("OK".encode())
 
 
 def serve():
