@@ -111,6 +111,11 @@ def serve():
                         help="test runner's port, by default it uses 8999",
                         default=8999,
                         action="store")
+    parser.add_argument("--dispatcher-server",
+                        help="dispatcher host:port, " \
+                             "by default it uses localhost:8888",
+                        default="localhost:8888",
+                        action="store")
     parser.add_argument("repo", metavar="REPO", type=str,
                         help="path to the repository this will run test")
     args = parser.parse_args()
